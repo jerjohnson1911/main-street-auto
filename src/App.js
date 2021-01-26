@@ -6,6 +6,9 @@ import './App.css'
 // Toast notification dependencies
 import { ToastContainer, toast } from 'react-toastify'
 
+// https://app.swaggerhub.com/apis/DevMountain/Joes-Auto/1.0.0
+
+
 class App extends Component {
   constructor(props) {
     super(props)
@@ -31,6 +34,17 @@ class App extends Component {
   getVehicles() {
     // axios (GET)
     // setState with response -> vehiclesToDisplay
+    axios.get("https://joes-autos.herokuapp.com/api/vehicles")
+    .then( res => {
+      toast.success("get them vehiculars!")
+      this.setState({
+        vehiclesToDisplay: res.data
+      })
+    }).catch( err => {
+      toast.error('dagum aint got no vehickles!')
+      console.log(err)
+    })
+      
   }
 
   getPotentialBuyers() {
@@ -41,6 +55,16 @@ class App extends Component {
   sellCar(id) {
     // axios (DELETE)
     // setState with response -> vehiclesToDisplay
+    axios.delete(`https://joes-autos.herokuapp.com/api/vehicles/${id}`)
+    .then( res => {
+      this.setState({
+        vehiclesToDisplay: res.data.vehicles
+      })
+      toast.success('we sold your car!! woot!')
+    }).catch( err=> {
+      console.log(err)
+      toast.error("car is crap won't sell")
+    })
   }
 
   filterByMake() {
@@ -60,6 +84,16 @@ class App extends Component {
   updatePrice(priceChange, id) {
     // axios (PUT)
     // setState with response -> vehiclesToDisplay
+    axios.put(`https://joes-autos.herokuapp.com/api/vehicles/${id}/${priceChange}`)
+    .then( res => {
+      toast.success(`successfully changed the price ${priceChange}`)
+      this.setState({
+        vehiclesToDisplay: res.data.vehicles
+      })
+    }).catch( err => {
+      console.log(err)
+      toast.error('failed to change price')
+    })
   }
 
   addCar() {
@@ -68,11 +102,19 @@ class App extends Component {
       model: this.model.value,
       color: this.color.value,
       year: this.year.value,
-      price: this.price.value,
+      price: +this.price.value,
     }
 
     // axios (POST)
     // setState with response -> vehiclesToDisplay
+    axios.post(`https://joes-autos.herokuapp.com/api/vehicles`, newCar)
+    .then( res => {
+      toast.success(`successfully add your ${newCar.make} ${newCar.model} to the lot!`)
+      this.setState({
+        vehiclesToDisplay: res.data.vehicles
+      })
+    })
+    .catch( err => toast.error('sorry dawg no can do!'))
   }
 
   addBuyer() {
